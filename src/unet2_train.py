@@ -303,7 +303,7 @@ if __name__ == '__main__':
     train_file_dict = {}
     for fname in train_imgpath_dict:
         if fname in train_labelpath_dict:
-            train_file_dict[fname] = tuple(train_imgpath_dict[fname], train_labelpath_dict[fname])
+            train_file_dict[fname] = tuple([train_imgpath_dict[fname], train_labelpath_dict[fname]])
 
     train_filenames = list(train_file_dict.keys())
     n_train = len(train_filenames)
