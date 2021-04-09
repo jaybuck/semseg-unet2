@@ -10,6 +10,8 @@ import glob
 import numpy as np
 from PIL import Image
 
+from common_utils import get_numpy_var_info
+
 
 def get_image_info(img: Image):
     info_str = 'image:  size: {}    mode: {} format: {} info: {}'.format(img.size,
