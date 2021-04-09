@@ -310,8 +310,9 @@ if __name__ == '__main__':
     print('Training:  dir: {}  Number of images: {}'.format(train_imgdir, n_train))
 
     fname0 = train_filenames[0]
-    img = Image.open(fname0)
-    print(f"Image fname {fname}  ")
+    img_fname, mask_fname = train_file_dict[fname0]
+    img = Image.open(mask_fname)
+    print(f"Image fname {mask_fname}  ")
     print('image size: ', img.size)
     print('image mode: ', img.mode)
     print('image format: ', img.format)
