@@ -114,9 +114,8 @@ class PilDataGenerator(Sequence):
             X[i, ] = img_data
 
             if label_data.shape[0] == img_data.shape[0]:
-                label_pixels = img_data[:, :, self.n_channels]
-                gt_bg = (label_pixels <= 0.5).astype(np.uint8)
-                gt_fg = (label_pixels > 0.5).astype(np.uint8)
+                gt_bg = (label_data <= 128).astype(np.uint8)
+                gt_fg = (label_data > 128).astype(np.uint8)
                 gt_sum = np.sum(gt_fg)
                 # print('gt_sum: ', gt_sum)
                 gt = np.stack((gt_bg, gt_fg), axis=2)

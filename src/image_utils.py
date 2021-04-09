@@ -19,7 +19,7 @@ def get_image_info(img: Image):
                                                                          img.format,
                                                                          img.info)
     img_data = np.array(img)
-    info_str = info_str + "np_data_info: " + get_numpy_var_info(img_data)
+    info_str = info_str + "  np_data_info: " + get_numpy_var_info(img_data)
     return info_str
 
 

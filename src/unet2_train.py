@@ -312,18 +312,17 @@ if __name__ == '__main__':
     n_train = len(train_filenames)
     print('Training:  dir: {}  Number of images: {}'.format(train_imgdir, n_train))
 
-    fname0 = train_filenames[0]
-    img_fname, mask_fname = train_file_dict[fname0]
+    if Verbosity > 0:
+        fname0 = train_filenames[0]
+        img_fname, mask_fname = train_file_dict[fname0]
 
-    img = Image.open(img_fname)
-    print(f"\nImage fname {mask_fname}  ")
-    print(get_image_info(img))
+        img = Image.open(img_fname)
+        print(f"\nImage fname {img_fname}  ")
+        print(get_image_info(img))
 
-    img = Image.open(mask_fname)
-    print(f"\nImage fname {mask_fname}  ")
-    print(get_image_info(img))
-
-    sys.exit(0)
+        img = Image.open(mask_fname)
+        print(f"\nImage fname {mask_fname}  ")
+        print(get_image_info(img))
 
     print("Reading validation images")
 
