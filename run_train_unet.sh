@@ -40,7 +40,7 @@ MODEL_NAME=20210404_training_example
 # Modify this:
 # To point to the base of the directory tree holding the
 # unet semantic segmentation code.
-PROJECTDIR=~/github/semset_unet2
+PROJECTDIR=~/github/semseg-unet2
 
 SRCDIR=${PROJECTDIR}/src
 

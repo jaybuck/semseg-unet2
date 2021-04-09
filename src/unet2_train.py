@@ -9,6 +9,7 @@ from pathlib import Path
 import argparse
 
 import numpy as np
+from PIL import Image
 import matplotlib.pyplot as plt
 
 # import tensorflow.compat.v2 as tf
@@ -307,6 +308,17 @@ if __name__ == '__main__':
     train_filenames = list(train_file_dict.keys())
     n_train = len(train_filenames)
     print('Training:  dir: {}  Number of images: {}'.format(train_imgdir, n_train))
+
+    fname0 = train_filenames[0]
+    img = Image.open(fname0)
+    print(f"Image fname {fname}  ")
+    print('image size: ', img.size)
+    print('image mode: ', img.mode)
+    print('image format: ', img.format)
+    print('image info: ', img.info)
+
+    sys.exit(0)
+
 
     test_imgdir = os.path.join(test_dir, "png")
     test_labeldir = os.path.join(test_dir, "mask")
