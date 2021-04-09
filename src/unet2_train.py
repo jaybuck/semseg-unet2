@@ -294,6 +294,8 @@ if __name__ == '__main__':
     # Get training and validation datasets
     #
 
+    print("Reading training images")
+
     train_imgdir = os.path.join(train_dir, "png")
     train_labeldir = os.path.join(train_dir, "mask")
 
@@ -317,9 +319,12 @@ if __name__ == '__main__':
     print('image mode: ', img.mode)
     print('image format: ', img.format)
     print('image info: ', img.info)
+    img_data = np.array(img)
+    print("img_data info: ", get_numpy_var_info(img_data))
 
     sys.exit(0)
 
+    print("Reading validation images")
 
     test_imgdir = os.path.join(test_dir, "png")
     test_labeldir = os.path.join(test_dir, "mask")
