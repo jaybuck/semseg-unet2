@@ -18,6 +18,7 @@ import tensorflow as tf
 from IPython.display import clear_output
 
 from common_utils import listdir_files, get_numpy_var_info
+from image_utils import get_image_info
 
 from generator_pil import PilDataGenerator
 
@@ -313,14 +314,15 @@ if __name__ == '__main__':
 
     fname0 = train_filenames[0]
     img_fname, mask_fname = train_file_dict[fname0]
+
+    img = Image.open(img_fname)
+    print(f"\nImage fname {mask_fname}  ")
+    get_image_info(img)
+
     img = Image.open(mask_fname)
-    print(f"Image fname {mask_fname}  ")
-    print('image size: ', img.size)
-    print('image mode: ', img.mode)
-    print('image format: ', img.format)
-    print('image info: ', img.info)
-    img_data = np.array(img)
-    print("img_data info: ", get_numpy_var_info(img_data))
+    print(f"\nImage fname {mask_fname}  ")
+    get_image_info(img)
+
 
     sys.exit(0)
 

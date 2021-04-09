@@ -11,6 +11,16 @@ import numpy as np
 from PIL import Image
 
 
+def get_image_info(img: Image):
+    info_str = 'image:  size: {}    mode: {} format: {} info: {}'.format(img.size,
+                                                                         img.mode,
+                                                                         img.format,
+                                                                         img.info)
+    img_data = np.array(img)
+    info_str = info_str + "np_data_info: " + get_numpy_var_info(img_data)
+    return info_str
+
+
 def save_output_exr(out_path, img_buf, output_prob, channel_name='class_prob'):
     """
     Save the img_buf and output_prob mask as an exr file
