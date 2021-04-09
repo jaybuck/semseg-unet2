@@ -317,12 +317,11 @@ if __name__ == '__main__':
 
     img = Image.open(img_fname)
     print(f"\nImage fname {mask_fname}  ")
-    get_image_info(img)
+    print(get_image_info(img))
 
     img = Image.open(mask_fname)
     print(f"\nImage fname {mask_fname}  ")
-    get_image_info(img)
-
+    print(get_image_info(img))
 
     sys.exit(0)
 
