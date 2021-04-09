@@ -335,7 +335,7 @@ if __name__ == '__main__':
     val_file_dict = {}
     for fname in val_imgpath_dict:
         if fname in val_labelpath_dict:
-            val_file_dict[fname] = tuple(val_imgpath_dict[fname], val_labelpath_dict[fname])
+            val_file_dict[fname] = tuple([val_imgpath_dict[fname], val_labelpath_dict[fname]])
 
     val_filenames = list(val_file_dict.keys())
     n_val = len(val_filenames)
