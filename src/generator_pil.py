@@ -99,7 +99,8 @@ class PilDataGenerator(Sequence):
         # Initialization
         n_pixels = self.dim[0] * self.dim[1]
         this_batch_size = min(self.batch_size, len(list_IDs_temp))
-        X = np.zeros((this_batch_size, *self.dim, self.n_channels))
+        # X = np.zeros((this_batch_size, *self.dim, self.n_channels))
+        X = np.zeros((this_batch_size, self.n_channels, *self.dim))
         y = np.zeros((this_batch_size, n_pixels, 2), dtype=int)
         pixelweights = np.zeros((this_batch_size, n_pixels), dtype=float)
         # print('generate_Xy: y: ', get_numpy_var_info(y))
@@ -108,14 +109,18 @@ class PilDataGenerator(Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Load image file
             img_path, label_mask_path = self.imgpath_dict[ID]
-            img_data = np.array(Image.open(img_path))
-            label_data = np.array(Image.open(label_mask_path))
+            img_pixels = np.array(Image.open(img_path))
+            img_data = img_pixels / 255.0
+            label_pixels = np.array(Image.open(label_mask_path))
+            label_data = label_pixels / 255.0
 
-            X[i, ] = img_data
+            # Change array ordering to channel, row, column
+            img_crc = np.moveaxis(img_data, -1, 0).copy()
+            X[i, ] = img_crc
 
             if label_data.shape[0] == img_data.shape[0]:
-                gt_bg = (label_data <= 128).astype(np.uint8)
-                gt_fg = (label_data > 128).astype(np.uint8)
+                gt_bg = (label_data < 0.5).astype(np.uint8)
+                gt_fg = (label_data >= 0.5).astype(np.uint8)
                 gt_sum = np.sum(gt_fg)
                 # print('gt_sum: ', gt_sum)
                 gt = np.stack((gt_bg, gt_fg), axis=2)

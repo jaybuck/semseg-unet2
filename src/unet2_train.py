@@ -36,19 +36,21 @@ sample_image = None
 sample_mask = None
 
 
-def display(display_list, suffix=0):
+def display(display_list, suffix=0, doplot=False):
     plt.figure(figsize=(8, 6))
 
     title = ['Input Image', 'True Mask', 'Predicted Mask']
 
-    for i in range(len(display_list)):
-        plt.subplot(1, len(display_list), i + 1)
-        plt.title(title[i])
-        plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
-        plt.axis('off')
-    fname = '_display_{}.png'.format(suffix)
-    plt.savefig(fname)
-    plt.close()
+    if doplot:
+        for i in range(len(display_list)):
+            plt.subplot(1, len(display_list), i + 1)
+            plt.title(title[i])
+            img_data = np.moveaxis(display_list[i], 0, -1)
+            plt.imshow(tf.keras.preprocessing.image.array_to_img(img_data))
+            plt.axis('off')
+        fname = '_display_{}.png'.format(suffix)
+        plt.savefig(fname)
+        plt.close()
 
 
 def create_prob_img(pred):
@@ -100,7 +102,7 @@ def show_predictions(generator=None, num=1, suffix='_'):
         pred = model.predict(sample_image[tf.newaxis, ...])
         # print('show_predictions: pred ', get_numpy_var_info(pred))
         sample_mask1 = sample_mask.copy()
-        sample_mask1 = sample_mask1[:, 1]
+        sample_mask1 = sample_mask1[..., np.newaxis]
         sample_mask1 = sample_mask1.reshape((INPUT_SIZE, INPUT_SIZE, 1))
         display([sample_image, sample_mask1, create_prob_img(pred)], suffix)
 
@@ -382,7 +384,7 @@ if __name__ == '__main__':
     # Define model
     #
     print('Defining unet model')
-    base_model = tf.keras.applications.MobileNetV2(input_shape=[224, 224, 3], include_top=False)
+    base_model = tf.keras.applications.MobileNetV2(include_top=False)
 
     # Use the activations of these layers
     layer_names = [

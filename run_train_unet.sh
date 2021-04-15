@@ -77,7 +77,7 @@ NEPOCHS=3
 echo "Running ${PROG}"
 set -x
 
-${PROG} --v ${PRENAV_VERBOSITY} \
+${PROG} -v ${PRENAV_VERBOSITY} \
         --epochs ${NEPOCHS} \
         --logdir ${LOG_DIR} \
         --batchsize 32 \
