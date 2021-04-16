@@ -29,6 +29,7 @@ echo "PROG:  $PROG"
 UNET_TRAINTEST_DIR=/mnt/efs0/work/PN/trainruns
 
 IMAGEDIR=/mnt/efs0/data1/PN/semseg/cracks/training
+# Are we on my Mac?
 if [[ "$HOME" =~ .*"Users".* ]]; then
   echo "HOME is " $HOME
   IMAGEDIR=/Users/data/PN/semseg/cracks/training/png
@@ -39,11 +40,11 @@ RESULTS_DIR="${BASEDIR}"
 LOG_DIR="${BASEDIR}/logs"
 
 # Directory holding the trained model
-MODEL_DIR="${UNET_TRAINTEST_DIR}/model/${MODEL_NAME}"
+# MODEL_DIR="${UNET_TRAINTEST_DIR}/model/${MODEL_NAME}"
 
 # Filepath of trained model
 #MODEL_PATH="${MODEL_DIR}/logs/model_checkpoint.h5"
-MODEL_PATH="${LOG_DIR}/logs/unetmodel"
+MODEL_PATH="${LOG_DIR}/unetmodel"
 echo "MODEL_PATH: $MODEL_PATH"
 
 # The usual validation set of 224x224 image tiles
@@ -55,7 +56,7 @@ TEST_DIR="${IMAGEDIR}/png_val_1000"
 echo "Running ${PROG}"
 set -x
 ${PROG} --model_path ${MODEL_PATH} \
-        --thresh 0.8 \
+        --thresh 0.5 \
         --output_dir "${RESULTS_DIR}/predictions" \
         --verbosity ${PRENAV_VERBOSITY} \
         --testdir ${TEST_DIR}

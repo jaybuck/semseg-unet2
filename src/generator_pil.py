@@ -10,7 +10,8 @@ from PIL import Image
 
 from tensorflow.keras.utils import Sequence
 
-from common_utils import listdir_files, get_numpy_var_info, color_img
+from common_utils import listdir_files, get_numpy_var_info
+from image_utils import color_img
 
 
 class PilDataGenerator(Sequence):
@@ -86,8 +87,8 @@ class PilDataGenerator(Sequence):
         indexes = self.indexes[batch_index * self.batch_size: min(len(self.indexes), (batch_index + 1) * self.batch_size)]
 
         # Find list of IDs
-        list_IDs_temp = [self.img_filenames[k] for k in indexes]
-        return list_IDs_temp
+        batch_filenames = [self.img_filenames[k] for k in indexes]
+        return batch_filenames
 
 
     def _generate_Xy(self, list_IDs_temp):

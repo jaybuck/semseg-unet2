@@ -65,31 +65,4 @@ def compute_interval_bounds(begin, desired_length, max_length):
 #     return dst
 
 
-def color_img(rgb_img, mask, thresh, color):
-    """
-    Color the image by color for pixels where the mask is greater than thresh
-    :param rgb_img: 3-d ndarray (w x h x numchannels)
-    :param mask: 2-d ndarray (w x h)
-    :param thresh: threshold
-    :param color: array-like of length 3 indicating (r, g, b) pixel values
-    :return: colored image
-    """
-    max_pix = rgb_img.max(axis=1)
-    max_pixel = max_pix.max(axis=0)
-    # print('color_img: rgb_img in:  dtype: {}   shape: {}  max: {}'.format(rgb_img.dtype, rgb_img.shape, max_pixel))
 
-    mask = mask > thresh
-    mask = mask.astype(np.uint8)
-    # print('color_img:  mask:  mean: {} max: {}  dtype: {}   shape: {}'.format(mask.mean(), mask.max(), mask.dtype, mask.shape))
-
-    color2 = np.array(color, ndmin=2)
-    # print('color2 dtype: {}   shape: {}'.format(color2.dtype, color2.shape))
-
-    mask2 = np.dot(mask, np.array(color, ndmin=2))
-    # print('mask2 dtype: {}   shape: {}'.format(mask2.dtype, mask2.shape))
-
-    rgb_img = np.maximum(rgb_img, mask2)
-    rgb_img = rgb_img.astype(np.uint8)
-    # print('rgb_img dtype: {}   shape: {}'.format(rgb_img.dtype, rgb_img.shape))
-
-    return rgb_img

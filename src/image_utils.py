@@ -56,33 +56,44 @@ def save_output_exr(out_path, img_buf, output_prob, channel_name='class_prob'):
     print("save_output_exr not implemented")
 
 
-def save_output_jpg(out_path, img_buf, output_prob, thresh=.5):
+def save_output_png(out_path, img, output_prob, thresh=.5):
     """
-    Save the img_buf and output_prob mask as a jpg file
+    Save the img and output_prob mask as a jpg file
     :param out_path: file path to write to
     :param image_buf: PIL Image of original image
     :param output_prob: 2-d ndarray of the output probabilities
     :param thresh: (default: .5) threshold for the output_prob
     :return:
     """
-    img_data = np.array(img_buf).astype(np.uint8)
+    img_data = np.array(img).astype(np.uint8)
     colored_data = color_img(img_data, output_prob.reshape(*output_prob.shape, 1), thresh, [255, 0, 0])
     Image.fromarray(colored_data).save(out_path)
 
 
-def color_img(rgb_data, mask, thresh, color):
+def color_img(rgb_arr, mask, thresh, color):
     """
     Color the image by color for pixels where the mask is greater than thresh
-    :param rgb_data: 3-d ndarray (w x h x numchannels)
+    :param rgb_arr: 3-d ndarray (w x h x numchannels)
     :param mask: 2-d ndarray (w x h)
     :param thresh: threshold
     :param color: array-like of length 3 indicating (r, g, b) pixel values
     :return: colored image
     """
+    max_pix = rgb_arr.max(axis=1)
+    max_pixel = max_pix.max(axis=0)
+    # print('color_img: rgb_arr info:  dtype: {}   shape: {}  max: {}'.format(rgb_arr.dtype, rgb_arr.shape, max_pixel))
+
     mask = mask > thresh
-    mask = np.dot(mask, np.array(color, ndmin=2))
-    rgb_data = np.maximum(rgb_data, mask)
-    return rgb_data
+    mask = mask.astype(np.uint8)
+    # print('mask info: {}'.format(get_numpy_var_info(mask)))
+
+    mask2 = np.dot(mask, np.array(color, ndmin=2))
+    # print('mask2 dtype: {}   shape: {}'.format(mask2.dtype, mask2.shape))
+
+    rgb_arr = np.maximum(rgb_arr, mask2)
+    rgb_arr = rgb_arr.astype(np.uint8)
+    # print('rgb_arr info: {}'.format(get_numpy_var_info(rgb_arr)))
+    return rgb_arr
 
 
 def select_channels(img, *channel_names):
