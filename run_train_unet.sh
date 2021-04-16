@@ -11,7 +11,7 @@
 # Seriously, you should do that.
 # But, in the meantime, to use this script modify these shell script variables:
 #
-# PROJECTDIR : github directory holding the semseg_unet code tree.
+# PROJECTDIR : github directory holding the semseg-unet code tree.
 #
 # UNET_TRAINTEST_DIR : The base dir of all of your u-net semantic segmentation
 #     train and inference runs.
@@ -57,6 +57,11 @@ UNET_TRAINTEST_DIR=/mnt/efs0/work/PN/trainruns
 # directories of image tiles you will use to train, validate and test
 # your U-Net models
 IMAGEDIR=/mnt/efs0/data1/PN/semseg/cracks/training
+if [[ "$HOME" =~ .*"Users".* ]]; then
+  echo "HOME is " $HOME
+  IMAGEDIR=/Users/data/PN/semseg/cracks/training/png
+fi
+echo "IMAGEDIR:  $IMAGEDIR"
 
 RESULTS_DIR="${BASEDIR}"
 LOG_DIR="${BASEDIR}/logs"
@@ -68,11 +73,12 @@ MODEL_DIR="${UNET_TRAINTEST_DIR}/model/${MODEL_NAME}"
 MODEL_PATH="${MODEL_DIR}/logs/unet_model"
 echo "MODEL_PATH: $MODEL_PATH"
 
-# TRAIN_DIR="${IMAGEDIR}/imagetiles_train_224_10000"
+#TRAIN_DIR="${IMAGEDIR}/png_train_1000"
+#TEST_DIR="${IMAGEDIR}/png_val_1000"
 TRAIN_DIR="${IMAGEDIR}/pngmask_train"
 TEST_DIR="${IMAGEDIR}/pngmask_val"
 
-NEPOCHS=3
+NEPOCHS=50
 
 echo "Running ${PROG}"
 set -x

@@ -75,12 +75,32 @@ if __name__ == '__main__':
     homedir = os.path.expanduser('~')
 
     # Setup batch generator for images to run model on.
+
     img_filepaths = listdir_files(test_dir)
     img_filenames = list(img_filepaths.keys())
     img_filenames.sort()
     n_img = len(img_filenames)
 
-    examples_length = n_img
+
+    test_imgdir = os.path.join(test_dir, "png")
+    test_labeldir = os.path.join(test_dir, "mask")
+
+    val_imgpath_dict = listdir_files(test_imgdir)
+    val_labelpath_dict = listdir_files(test_labeldir)
+
+    val_file_dict = {}
+    for fname in val_imgpath_dict:
+        if fname in val_labelpath_dict:
+            val_file_dict[fname] = tuple([val_imgpath_dict[fname], val_labelpath_dict[fname]])
+
+    val_filenames = list(val_file_dict.keys())
+    n_val = len(val_filenames)
+    print('Validation:  dir: {}  Number of images: {}'.format(test_dir, n_val))
+
+    img_generator = PilDataGenerator(val_filenames, val_file_dict, shuffle=False,
+                                     to_fit=False, batch_size=batch_size_val, verbosity=2)
+
+    examples_length = n_val
     steps_per_epoch = max(1, examples_length // batch_size_val)
     print('-' * 80)
     print('Number of examples: {}    steps_per_epoch: {}'.format(examples_length, steps_per_epoch))
@@ -118,6 +138,9 @@ if __name__ == '__main__':
             id = batch_ids[i]
             print('\nimage file: {}'.format(id))
             image_filepath = img_filepaths[id]
+            img = Image.open(image_filepath)
+            img_arr = np.array(img)
+
             exr_buf = oiio.ImageBuf(image_filepath)
             exr_spec = exr_buf.spec()
             exr_width = exr_spec.width

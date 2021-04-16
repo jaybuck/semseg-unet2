@@ -23,6 +23,23 @@ def get_image_info(img: Image):
     return info_str
 
 
+def array_to_image(arr, scale='auto'):
+    arr_shape = arr.shape
+    if len(arr_shape) == 2:
+        arr = arr[..., np.newaxis]
+    n_channels = arr.shape[-1]
+    if scale == "auto":
+        arr_min = arr.min()
+        arr_max = arr.max()
+        if arr_max <= 1.0:
+            if arr_min >= 0.0:
+                arr = arr * 255.0
+            elif arr_min >= -1.0:
+                arr = 255.0 * (arr + 1.0)
+
+    arr.astype(np.uint8)
+    img = Image.fromarray(arr)
+
 def save_output_exr(out_path, img_buf, output_prob, channel_name='class_prob'):
     """
     Save the img_buf and output_prob mask as an exr file

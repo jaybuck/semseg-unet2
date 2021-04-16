@@ -99,8 +99,8 @@ class PilDataGenerator(Sequence):
         # Initialization
         n_pixels = self.dim[0] * self.dim[1]
         this_batch_size = min(self.batch_size, len(list_IDs_temp))
-        # X = np.zeros((this_batch_size, *self.dim, self.n_channels))
-        X = np.zeros((this_batch_size, self.n_channels, *self.dim))
+        X = np.zeros((this_batch_size, *self.dim, self.n_channels))
+        # X = np.zeros((this_batch_size, self.n_channels, *self.dim))
         y = np.zeros((this_batch_size, n_pixels, 2), dtype=int)
         pixelweights = np.zeros((this_batch_size, n_pixels), dtype=float)
         # print('generate_Xy: y: ', get_numpy_var_info(y))
@@ -115,8 +115,9 @@ class PilDataGenerator(Sequence):
             label_data = label_pixels / 255.0
 
             # Change array ordering to channel, row, column
-            img_crc = np.moveaxis(img_data, -1, 0).copy()
-            X[i, ] = img_crc
+            # img_crc = np.moveaxis(img_data, -1, 0).copy()
+            # X[i, ] = img_crc
+            X[i, ] = img_data
 
             if label_data.shape[0] == img_data.shape[0]:
                 gt_bg = (label_data < 0.5).astype(np.uint8)

@@ -9,8 +9,8 @@ from pathlib import Path
 import argparse
 
 import numpy as np
-from PIL import Image
 import matplotlib.pyplot as plt
+from PIL import Image
 
 # import tensorflow.compat.v2 as tf
 import tensorflow as tf
@@ -18,8 +18,7 @@ import tensorflow as tf
 from IPython.display import clear_output
 
 from common_utils import listdir_files, get_numpy_var_info
-from image_utils import get_image_info
-
+from image_utils import array_to_image
 from generator_pil import PilDataGenerator
 
 tf.compat.v1.enable_eager_execution()
@@ -36,21 +35,21 @@ sample_image = None
 sample_mask = None
 
 
-def display(display_list, suffix=0, doplot=False):
+def display(display_list, suffix=0):
     plt.figure(figsize=(8, 6))
 
     title = ['Input Image', 'True Mask', 'Predicted Mask']
 
-    if doplot:
-        for i in range(len(display_list)):
-            plt.subplot(1, len(display_list), i + 1)
-            plt.title(title[i])
-            img_data = np.moveaxis(display_list[i], 0, -1)
-            plt.imshow(tf.keras.preprocessing.image.array_to_img(img_data))
-            plt.axis('off')
-        fname = '_display_{}.png'.format(suffix)
-        plt.savefig(fname)
-        plt.close()
+    for i in range(len(display_list)):
+        plt.subplot(1, len(display_list), i + 1)
+        plt.title(title[i])
+        print(f"display_list {i} shape: {display_list[i].shape}")
+        # plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+        plt.imshow(display_list[i])
+        plt.axis('off')
+    fname = '_display_{}.png'.format(suffix)
+    plt.savefig(fname)
+    plt.close()
 
 
 def create_prob_img(pred):
@@ -69,7 +68,6 @@ def create_prob_img(pred):
 
 def create_mask(pred):
     print('create_mask pred type: ', type(pred))
-
     print('create_mask pred: ', get_numpy_var_info(pred))
     pred0 = pred[0]
     pred_mat = pred0.reshape(INPUT_SIZE, INPUT_SIZE, OUTPUT_CHANNELS)
@@ -92,6 +90,7 @@ def show_predictions(generator=None, num=1, suffix='_'):
             mask1 = mask1.reshape((INPUT_SIZE, INPUT_SIZE, 1))
             pred = model.predict(image[tf.newaxis, ...])
             filesuffix = '{}_{}'.format(suffix, i)
+            print(f"show_predictions: {i}  image.shape: {image.shape}  mask1.shape: {mask1.shape}  pred.shape: {pred.shape}")
             # display([image, mask1, create_mask(pred)], filesuffix)
             display([image, mask1, create_prob_img(pred)], filesuffix)
 
@@ -102,8 +101,9 @@ def show_predictions(generator=None, num=1, suffix='_'):
         pred = model.predict(sample_image[tf.newaxis, ...])
         # print('show_predictions: pred ', get_numpy_var_info(pred))
         sample_mask1 = sample_mask.copy()
-        sample_mask1 = sample_mask1[..., np.newaxis]
+        sample_mask1 = sample_mask1[:, 1]
         sample_mask1 = sample_mask1.reshape((INPUT_SIZE, INPUT_SIZE, 1))
+        print(f"show_predictions: sample image.shape: {sample_image.shape}  mask1.shape: {sample_mask1.shape}  pred.shape: {pred.shape}")
         display([sample_image, sample_mask1, create_prob_img(pred)], suffix)
 
 
@@ -297,8 +297,6 @@ if __name__ == '__main__':
     # Get training and validation datasets
     #
 
-    print("Reading training images")
-
     train_imgdir = os.path.join(train_dir, "png")
     train_labeldir = os.path.join(train_dir, "mask")
 
@@ -313,20 +311,6 @@ if __name__ == '__main__':
     train_filenames = list(train_file_dict.keys())
     n_train = len(train_filenames)
     print('Training:  dir: {}  Number of images: {}'.format(train_imgdir, n_train))
-
-    if Verbosity > 0:
-        fname0 = train_filenames[0]
-        img_fname, mask_fname = train_file_dict[fname0]
-
-        img = Image.open(img_fname)
-        print(f"\nImage fname {img_fname}  ")
-        print(get_image_info(img))
-
-        img = Image.open(mask_fname)
-        print(f"\nImage fname {mask_fname}  ")
-        print(get_image_info(img))
-
-    print("Reading validation images")
 
     test_imgdir = os.path.join(test_dir, "png")
     test_labeldir = os.path.join(test_dir, "mask")
@@ -350,7 +334,7 @@ if __name__ == '__main__':
     train_generator = PilDataGenerator(train_filenames, train_file_dict,
                                        to_fit=True, batch_size=batch_size, pos_weight=pos_weight, verbosity=2)
 
-    val_generator = PilDataGenerator(val_filenames, val_file_dict,
+    val_generator = PilDataGenerator(val_filenames, val_file_dict, shuffle=False,
                                      to_fit=True, batch_size=batch_size_val, pos_weight=pos_weight, verbosity=2)
 
     i = 0
@@ -369,10 +353,14 @@ if __name__ == '__main__':
 
     if Verbosity >= 1:
         print('Display sample image')
+        # Change array ordering back to row, column, channel
+        # img_rcc = np.moveaxis(sample_image, 0, -1).copy()
+        img = sample_image
+
         sample_mask1 = sample_mask.copy()
         sample_mask1 = sample_mask1[:, 1]
         sample_mask1 = sample_mask1.reshape((INPUT_SIZE, INPUT_SIZE, 1))
-        display([sample_image, sample_mask1], suffix='sampleimage')
+        display([img, sample_mask1], suffix='sampleimage')
 
     val_images, val_masks, val_pixweights = val_generator.__getitem__(0)
     print('val_images shape: {}    val_masks shape: {}'.format(val_images.shape, val_masks.shape))
@@ -384,7 +372,8 @@ if __name__ == '__main__':
     # Define model
     #
     print('Defining unet model')
-    base_model = tf.keras.applications.MobileNetV2(include_top=False)
+    base_model = tf.keras.applications.MobileNetV2(input_shape=tuple([224, 224, 3]), include_top=False)
+    #base_model = tf.keras.applications.MobileNetV2(include_top=False)
 
     # Use the activations of these layers
     layer_names = [
